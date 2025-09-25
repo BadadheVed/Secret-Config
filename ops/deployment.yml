@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+      - name: todo-backend
+        image: 100xdevs/todo-app-test:1
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: port
+       # - name: DATABASE_URL # this name is the name of your process.env.<ENV_NAME> this one
+       #   valueFrom: 
+       #     configMapKeyRef: <--- this is coming from the Config Map --> Below is coming from the Secrets i.e secretKeyRef
+       #       name: backend-config
+       #       key: dburl
+        - name: DATABASE_URL # this name is the name of your process.env.<ENV_NAME> this one
+          valueFrom:
+            secretKeyRef:
+              name: backend-secret
+              key: db_url
+      
