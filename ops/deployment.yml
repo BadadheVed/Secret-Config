@@ -17,20 +17,12 @@ spec:
         image: 100xdevs/todo-app-test:1
         ports:
         - containerPort: 3000
-        env:
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: backend-config
-              key: port
-       # - name: DATABASE_URL # this name is the name of your process.env.<ENV_NAME> this one
-       #   valueFrom: 
-       #     configMapKeyRef: <--- this is coming from the Config Map --> Below is coming from the Secrets i.e secretKeyRef
-       #       name: backend-config
-       #       key: dburl
-        - name: DATABASE_URL # this name is the name of your process.env.<ENV_NAME> this one
-          valueFrom:
-            secretKeyRef:
-              name: backend-secret
-              key: db_url
-      
+        volumeMounts: 
+        - name: env-file
+          readOnly: true           # the DbUrl will be stored here
+          mountPath: "/app/secret" # <-----  this here becasue /app if we add only this then the source code will be erased fro m here 
+      volumes:
+      - name: env-file. #<--- this is the name of the file
+        secret: 
+          secretName: backend-secret # <--- this is pointing to the ops/sceret.yml ->> Service Name
+          
